@@ -67,15 +67,15 @@
             app:activeColor="?attr/colorSecondaryVariant"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_point"
+            android:id="@+id/floating_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_add"
             android:scaleType="fitCenter"
             app:backgroundTint="?attr/colorPrimary"
             app:tint="?attr/colorOnPrimary"
+            tools:src="@drawable/ic_add"
             tools:ignore="ContentDescription" />
 
     </FrameLayout>
