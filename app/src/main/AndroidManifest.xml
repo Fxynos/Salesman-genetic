@@ -20,6 +20,10 @@
         </activity>
 
         <activity android:name=".BuildGraphActivity" android:exported="false"/>
+        
+        <activity android:name=".GenLearningActivity" android:exported="false"/>
+
+        <activity android:name=".ResultActivity" android:exported="false"/>
 
     </application>
 

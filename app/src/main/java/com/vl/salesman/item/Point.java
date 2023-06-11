@@ -9,6 +9,16 @@ public class Point extends PointF {
         super(x, y);
     }
 
+    public Point(PointF point) {
+        this(point.x, point.y);
+    }
+
+    public PointF getPoint() {
+        PointF pointF = new PointF();
+        pointF.set(this);
+        return pointF;
+    }
+
     public boolean isChecked() {
         return isChecked;
     }

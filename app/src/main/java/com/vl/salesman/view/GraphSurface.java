@@ -26,7 +26,7 @@ public class GraphSurface extends SurfaceView implements SurfaceHolder.Callback 
     private final static int MAX_FRAMES_PER_SECOND = 60;
     private final static int MIN_DELAY_BETWEEN_FRAMES = 1000 / MAX_FRAMES_PER_SECOND;
     private final static float STROKE_WIDTH = 6f;
-    private final static float RADIUS = 20f;
+    private final static float RADIUS = 30f;
 
     private final Set<Point> points = new CopyOnWriteArraySet<>();
     private final Set<Pair<Point[], Boolean>> contacts = new CopyOnWriteArraySet<>();

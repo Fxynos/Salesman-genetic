@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".BuildGraphActivity">
+    android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -17,14 +16,14 @@
             app:contentInsetStart="16dp"
             app:contentInsetEnd="16dp">
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/build_graph_info"
+                    android:id="@+id/result_info"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_info"
@@ -33,51 +32,52 @@
                     tools:ignore="ContentDescription" />
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="@string/build_graph_header"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:layout_weight="1"/>
+                    android:text="@string/learning_result"
+                    android:textColor="?attr/colorOnPrimary" />
 
                 <ImageButton
-                    android:id="@+id/apply"
+                    android:id="@+id/play"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_check"
+                    android:layout_gravity="end"
                     android:background="@android:color/transparent"
                     app:tint="?attr/colorOnPrimary"
-                    tools:ignore="ContentDescription"/>
+                    tools:src="@drawable/ic_play"
+                    tools:ignore="ContentDescription" />
 
-            </LinearLayout>
+            </FrameLayout>
 
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        app:cardElevation="2dp"
+        app:shapeAppearanceOverlay="@style/TopCardAppearance">
 
-        <com.vl.salesman.view.GraphSurface
-            android:id="@+id/build_graph_surface"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:regularColor="?attr/colorPrimaryVariant"
-            app:activeColor="?attr/colorSecondaryVariant"/>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floating_button"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:scaleType="fitCenter"
-            app:backgroundTint="?attr/colorPrimary"
-            app:tint="?attr/colorOnPrimary"
-            tools:src="@drawable/ic_add"
-            tools:ignore="ContentDescription" />
+            android:orientation="vertical"
+            android:padding="8dp">
 
-    </FrameLayout>
+            <include layout="@layout/result_fields" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.vl.salesman.view.GraphSurface
+        android:id="@+id/graph_surface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="-12dp"
+        app:regularColor="?attr/colorPrimary"
+        app:activeColor="?attr/colorSecondary"/>
 
 </LinearLayout>

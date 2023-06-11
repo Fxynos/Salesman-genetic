@@ -3,6 +3,7 @@ package com.vl.genmodel;
 import com.vl.genmodel.util.Pair;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -17,7 +18,8 @@ public class GeneticModel<T extends Path> implements Cloneable {
     private int populationSize = 1000;
     private double mutationRate = 1.0;
     private BreedStrategy breedStrategy = BreedStrategy.BEST;
-    private Trainer trainer = null;
+    private volatile Trainer trainer;
+    private volatile Result<T> intermediateResult;
 
     @NotNull
     @Override
@@ -30,15 +32,23 @@ public class GeneticModel<T extends Path> implements Cloneable {
         }
     }
 
+    @Nullable
+    public Result<T> getIntermediateResult() {
+        if (!isStarted())
+            throw new IllegalStateException("Learning process is not started");
+        return intermediateResult;
+    }
+
     /* Main Logic */
 
     public boolean isStarted() {
-        return trainer != null;
+        return trainer != null && trainer.isAlive();
     }
 
     public void start(long iterations) {
         if (isStarted())
             throw new IllegalStateException("Training has already started before");
+        intermediateResult = null;
         trainer = new Trainer(iterations);
         trainer.start();
     }
@@ -47,12 +57,16 @@ public class GeneticModel<T extends Path> implements Cloneable {
         start(Long.MAX_VALUE);
     }
 
-    public void stop(Callback<T> callback) {
-        trainer.requestResult(callback);
-        trainer = null;
+    public void requestResult(Callback<T> callback, boolean interrupt) {
+        if (!isStarted())
+            throw new IllegalStateException("Learning process is not started");
+        trainer.requestResult(callback, interrupt);
     }
 
+    @NotNull
     public Result<T> awaitResult(boolean interruptTraining) {
+        if (!isStarted())
+            throw new IllegalStateException("Learning process is not started");
         if (interruptTraining)
             trainer.interrupt();
         try {
@@ -60,9 +74,7 @@ public class GeneticModel<T extends Path> implements Cloneable {
         } catch (InterruptedException e) {
             throw new RuntimeException("Calculation thread was terminated");
         }
-        Result<T> result = trainer.pendingResult;
-        trainer = null;
-        return result;
+        return trainer.pendingResult;
     }
 
     /* Builder */
@@ -120,7 +132,6 @@ public class GeneticModel<T extends Path> implements Cloneable {
 
     private class Trainer extends Thread {
         private volatile T[] population;
-        private volatile boolean isRunning = false;
         private final Random rand = new Random(System.currentTimeMillis());
         private Callback<T> callback = null;
         private Result<T> pendingResult = null;
@@ -131,21 +142,16 @@ public class GeneticModel<T extends Path> implements Cloneable {
         }
 
         @Override
-        public void interrupt() {
-            isRunning = false;
-            super.interrupt();
-        }
-
-        @Override
         public void run() {
-            isRunning = true;
             long iterations = 0;
             population = getInitialPopulation();
             Arrays.sort(population, selector);
-            while (isRunning && iterations < this.iterations) {
+            intermediateResult = new Result<>(0, population);
+            while (!interrupted() && iterations < this.iterations) {
                 Pair<T, T> parents = getParents();
                 T child = breeder.apply(parents.getFirst(), parents.getSecond());
                 insert(rand.nextDouble() < mutationRate ? mutator.apply(child) : child);
+                intermediateResult = new Result<>(iterations, population);
                 iterations++;
             }
             pendingResult = new Result<>(iterations, population);
@@ -154,15 +160,16 @@ public class GeneticModel<T extends Path> implements Cloneable {
         }
 
         /**
-         * Interrupts thread and registers disposable callback for result.<br/>
+         * Interrupts thread if needed and registers disposable callback for result.<br/>
          * If it's already interrupted, immediately returns result via callback.
          */
-        public void requestResult(Callback<T> callback) {
+        public void requestResult(Callback<T> callback, boolean interrupt) {
             if (pendingResult != null)
                 callback.onResult(pendingResult);
             else {
                 this.callback = callback;
-                interrupt();
+                if (interrupt)
+                    interrupt();
             }
         }
 
@@ -201,7 +208,7 @@ public class GeneticModel<T extends Path> implements Cloneable {
         }
     }
 
-    interface Callback<T extends Path> {
+    public interface Callback<T extends Path> {
         void onResult(Result<T> result);
     }
 

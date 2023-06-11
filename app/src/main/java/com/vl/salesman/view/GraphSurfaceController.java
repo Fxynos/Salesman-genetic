@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 @SuppressLint("ClickableViewAccessibility")
 public class GraphSurfaceController {
-    private final static float POINT_CLICK_RADIUS = 30f;
+    private final static float POINT_CLICK_RADIUS = 35f;
 
     private final GraphSurface surfaceView;
     private final TouchHandler touchHandler;
@@ -36,7 +36,7 @@ public class GraphSurfaceController {
             return false;
         surfaceView.getPoints().remove(touchHandler.clickPoint);
         surfaceView.getContacts().stream()
-                .filter(pair -> Arrays.stream(pair.first).anyMatch(p -> p == touchHandler.clickPoint))
+                .filter(pair -> Arrays.stream(pair.first).anyMatch(p -> p.equals(touchHandler.clickPoint)))
                 .forEach(surfaceView.getContacts()::remove);
         touchHandler.clickPoint = null;
         return true;
@@ -117,7 +117,7 @@ public class GraphSurfaceController {
                         pointFrom.setChecked(false);
                         surfaceView.getContacts().remove(clickConnection);
                         clickConnection = new Pair<>(new Point[]{pointFrom, pointTo}, false);
-                        if (pointTo != null && pointFrom != pointTo && !isThereConnection(clickConnection))
+                        if (pointTo != null && !pointFrom.equals(pointTo) && !isThereConnection(clickConnection))
                             surfaceView.getContacts().add(clickConnection);
                         clickConnection = null;
                     }
@@ -152,7 +152,7 @@ public class GraphSurfaceController {
         private boolean isThereConnection(Pair<Point[], Boolean> connection) {
             return surfaceView.getContacts().stream().map(pair -> pair.first).anyMatch(
                     points -> Arrays.stream(points)
-                            .filter(p -> p == connection.first[0] || p == connection.first[1])
+                            .filter(p -> p.equals(connection.first[0]) || p.equals(connection.first[1]))
                             .count() == 2
             );
         }

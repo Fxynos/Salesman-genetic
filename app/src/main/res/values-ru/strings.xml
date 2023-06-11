@@ -4,4 +4,20 @@
     <string name="info">Информация</string>
     <string name="exit">Выход</string>
     <string name="build_graph_header">Построение графа</string>
+    <string name="learning_strategy">Стратегия обучения</string>
+    <string name="breed_strategy">Стратегия скрещивания</string>
+    <string name="population_size">Численность популяции</string>
+    <string name="initial_gen_size">Изначальный размер гена</string>
+    <string name="to">До</string>
+    <string name="mutations_count">Количество мутаций</string>
+    <string name="mutation_chance">Вероятность мутации</string>
+    <string name="launch_learning">Запустить обучение</string>
+    <string name="visit_all_points">Посещение всех точек</string>
+    <string name="return_to_origin_point">Возврат в исходную точку</string>
+    <string name="path_length">Длина маршрута</string>
+    <string name="complete">Завершить</string>
+    <string name="max_iterations_count">Максимальное количество итераций</string>
+    <string name="learning_result">Результат обучения</string>
+    <string name="path_points_count">Точек в маршруте</string>
+    <string name="iterations">Результат получен на итерации</string>
 </resources>
