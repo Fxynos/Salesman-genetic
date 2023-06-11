@@ -21,7 +21,7 @@ public class LearningProcessDialog extends DialogFragment {
 
     private FragmentLearningProcessBinding binding;
     private ResultFieldsBinding resultBinding;
-    private View.OnClickListener bufListener = null; // for case setOnItemClickListener() before onCreateView()
+    private View.OnClickListener bufListener = null; // for case setOnCompleteClickListener() before onCreateView()
     private int checkedColor;
 
     @Nullable

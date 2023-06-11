@@ -11,16 +11,16 @@ import androidx.core.util.Pair;
 import com.vl.salesman.bundlewrapper.GraphData;
 import com.vl.salesman.databinding.ActivityBuildGraphBinding;
 import com.vl.salesman.item.Point;
-import com.vl.salesman.view.GraphSurfaceController;
+import com.vl.salesman.graphview.GraphSurfaceBuildingController;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class BuildGraphActivity extends AppCompatActivity implements View.OnClickListener, GraphSurfaceController.GraphSurfaceCallback {
+public class BuildGraphActivity extends AppCompatActivity implements View.OnClickListener, GraphSurfaceBuildingController.GraphSurfaceCallback {
     private ActivityBuildGraphBinding binding;
-    private GraphSurfaceController surfaceController;
+    private GraphSurfaceBuildingController surfaceController;
     private boolean isPointChecked = false;
 
     @Override
@@ -31,7 +31,7 @@ public class BuildGraphActivity extends AppCompatActivity implements View.OnClic
         updateFloatingButtonIcon();
         Stream.of(binding.floatingButton, binding.buildGraphInfo, binding.apply)
                 .forEach(b -> b.setOnClickListener(this));
-        surfaceController = new GraphSurfaceController(binding.buildGraphSurface);
+        surfaceController = new GraphSurfaceBuildingController(binding.buildGraphSurface);
         surfaceController.setCallback(this);
     }
 
@@ -65,18 +65,20 @@ public class BuildGraphActivity extends AppCompatActivity implements View.OnClic
                 // TODO
                 break;
             case R.id.apply:
-                GraphData graph = new GraphData();
-                graph.setPoints(binding.buildGraphSurface.getPoints().stream()
-                        .map(Point::getPoint).collect(Collectors.toSet()));
-                graph.setConnects(binding.buildGraphSurface.getContacts().stream()
-                        .map(p -> new Pair<>(p.first[0].getPoint(), p.first[1].getPoint()))
-                        .collect(Collectors.toSet()));
-                graph.setStartPoint(binding.buildGraphSurface.getPoints().stream()
-                        .findAny().orElseThrow(RuntimeException::new));
-                Intent intent = new Intent(this, GenLearningActivity.class);
-                intent.putExtras(graph.getBundle());
-                startActivity(intent);
-                finish();
+                if (!surfaceController.isGraphInIntermediateState()) {
+                    GraphData graph = new GraphData();
+                    graph.setPoints(binding.buildGraphSurface.getPoints().stream()
+                            .map(Point::getPoint).collect(Collectors.toSet()));
+                    graph.setConnects(binding.buildGraphSurface.getContacts().stream()
+                            .map(p -> new Pair<>(p.first[0].getPoint(), p.first[1].getPoint()))
+                            .collect(Collectors.toSet()));
+                    graph.setStartPoint(binding.buildGraphSurface.getPoints().stream()
+                            .findAny().orElseThrow(RuntimeException::new));
+                    Intent intent = new Intent(this, GenLearningActivity.class);
+                    intent.putExtras(graph.getBundle());
+                    startActivity(intent);
+                    finish();
+                }
                 break;
         }
     }

@@ -1,6 +1,6 @@
 package com.vl.genmodel;
 
-class Path {
+public class Path {
     private final int[] points;
 
     public Path(int[] points) {

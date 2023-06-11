@@ -1,4 +1,4 @@
-package com.vl.salesman.view;
+package com.vl.salesman.graphview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -14,6 +14,7 @@ import android.view.SurfaceView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import com.vl.salesman.R;
@@ -26,14 +27,19 @@ public class GraphSurface extends SurfaceView implements SurfaceHolder.Callback 
     private final static int MAX_FRAMES_PER_SECOND = 60;
     private final static int MIN_DELAY_BETWEEN_FRAMES = 1000 / MAX_FRAMES_PER_SECOND;
     private final static float STROKE_WIDTH = 6f;
-    private final static float RADIUS = 30f;
+    private final static float
+            RADIUS = 30f,
+            POINTER_RADIUS = 35f;
+    private final static float OFFSET_BORDER = 100f;
 
     private final Set<Point> points = new CopyOnWriteArraySet<>();
     private final Set<Pair<Point[], Boolean>> contacts = new CopyOnWriteArraySet<>();
+    private volatile PointF pointer;
 
     @ColorInt
     private final int regularColor, activeColor;
     private Drawer drawer = null;
+    private final PointF offsetVector = new PointF(0, 0);
 
     public GraphSurface(Context context, AttributeSet set) {
         super(context, set);
@@ -47,6 +53,42 @@ public class GraphSurface extends SurfaceView implements SurfaceHolder.Callback 
         } finally {
             typed.recycle();
         }
+    }
+
+    /**
+     * @param pointer null for hidden pointer
+     */
+    public void movePointerTo(@Nullable PointF pointer) {
+        this.pointer = pointer;
+    }
+
+    public PointF getOffsetVector() {
+        return offsetVector;
+    }
+
+    public void applyOffset(float dx, float dy) {
+        offsetVector.x = Math.min(getMaxXOffset(), Math.max(getMinXOffset(), offsetVector.x + dx));
+        offsetVector.y = Math.min(getMaxYOffset(), Math.max(getMinYOffset(), offsetVector.y + dy));
+    }
+
+    private float getMaxYOffset() {
+        return getHeight() - (float) points.stream().mapToDouble(p -> p.y)
+                .min().orElseThrow(RuntimeException::new) - OFFSET_BORDER;
+    }
+
+    private float getMinYOffset() {
+        return OFFSET_BORDER - (float) points.stream().mapToDouble(p -> p.y)
+                .max().orElseThrow(RuntimeException::new);
+    }
+
+    private float getMaxXOffset() {
+        return getWidth() - (float) points.stream().mapToDouble(p -> p.x)
+                .min().orElseThrow(RuntimeException::new) - OFFSET_BORDER;
+    }
+
+    private float getMinXOffset() {
+        return OFFSET_BORDER - (float) points.stream().mapToDouble(p -> p.x)
+                .max().orElseThrow(RuntimeException::new);
     }
 
     public Set<Point> getPoints() {
@@ -118,9 +160,27 @@ public class GraphSurface extends SurfaceView implements SurfaceHolder.Callback 
         private void draw(Canvas canvas) {
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
             for (Pair<Point[], Boolean> pair : contacts)
-                canvas.drawLine(pair.first[0].x, pair.first[0].y, pair.first[1].x, pair.first[1].y, pair.second ? activeStroke : regularStroke);
+                canvas.drawLine(
+                        pair.first[0].x + offsetVector.x,
+                        pair.first[0].y + offsetVector.y,
+                        pair.first[1].x + offsetVector.x,
+                        pair.first[1].y + offsetVector.y,
+                        pair.second ? activeStroke : regularStroke
+                );
             for (Point point : points)
-                canvas.drawCircle(point.x, point.y, RADIUS, point.isChecked() ? activeFill : regularFill);
+                canvas.drawCircle(
+                        point.x + offsetVector.x,
+                        point.y + offsetVector.y,
+                        RADIUS,
+                        point.isChecked() ? activeFill : regularFill
+                );
+            if (pointer != null)
+                canvas.drawCircle(
+                        pointer.x + offsetVector.x,
+                        pointer.y + offsetVector.y,
+                        POINTER_RADIUS,
+                        activeFill
+                );
         }
     }
 }

@@ -33,7 +33,7 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, BuildGraphActivity.class));
                 finish();
                 break;
-            case R.id.build_graph_info:
+            case R.id.info:
                 // TODO
                 break;
             case R.id.exit:

@@ -1,4 +1,4 @@
-package com.vl.salesman.view;
+package com.vl.salesman.graphview;
 
 import android.annotation.SuppressLint;
 import android.view.MotionEvent;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 @SuppressLint("ClickableViewAccessibility")
-public class GraphSurfaceController {
+public class GraphSurfaceBuildingController {
     private final static float POINT_CLICK_RADIUS = 35f;
 
     private final GraphSurface surfaceView;
@@ -22,7 +22,7 @@ public class GraphSurfaceController {
     private GraphSurfaceCallback listener;
     private boolean isPointPlacing = false;
 
-    public GraphSurfaceController(GraphSurface surfaceView) {
+    public GraphSurfaceBuildingController(GraphSurface surfaceView) {
         this.surfaceView = surfaceView;
         surfaceView.setOnTouchListener(touchHandler = new TouchHandler());
     }
@@ -44,6 +44,10 @@ public class GraphSurfaceController {
 
     public void setCallback(GraphSurfaceCallback listener) {
         this.listener = listener;
+    }
+
+    public boolean isGraphInIntermediateState() { // there is connection dragging from one point not connected to another
+        return touchHandler.clickConnection != null;
     }
 
     public interface GraphSurfaceCallback {

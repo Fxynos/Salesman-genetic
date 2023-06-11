@@ -38,16 +38,6 @@
                     android:text="@string/learning_result"
                     android:textColor="?attr/colorOnPrimary" />
 
-                <ImageButton
-                    android:id="@+id/play"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="end"
-                    android:background="@android:color/transparent"
-                    app:tint="?attr/colorOnPrimary"
-                    tools:src="@drawable/ic_play"
-                    tools:ignore="ContentDescription" />
-
             </FrameLayout>
 
         </androidx.appcompat.widget.Toolbar>
@@ -72,12 +62,30 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <com.vl.salesman.view.GraphSurface
-        android:id="@+id/graph_surface"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="-12dp"
-        app:regularColor="?attr/colorPrimary"
-        app:activeColor="?attr/colorSecondary"/>
+        android:layout_height="match_parent">
+
+        <com.vl.salesman.graphview.GraphSurface
+            android:id="@+id/graph_surface"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:regularColor="?attr/colorPrimaryVariant"
+            app:activeColor="?attr/colorSecondaryVariant"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:backgroundTint="?attr/colorPrimary"
+            app:tint="?attr/colorOnPrimary"
+            app:borderWidth="0dp"
+            tools:src="@drawable/ic_play"
+            tools:ignore="ContentDescription" />
+
+    </FrameLayout>
+
 
 </LinearLayout>
