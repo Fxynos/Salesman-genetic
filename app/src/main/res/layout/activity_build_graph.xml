@@ -24,12 +24,10 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/build_graph_info"
+                    android:id="@+id/back"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_info"
-                    android:background="@android:color/transparent"
-                    app:tint="?attr/colorOnPrimary"
+                    android:src="@drawable/ic_back"
                     tools:ignore="ContentDescription" />
 
                 <TextView
@@ -40,14 +38,27 @@
                     android:textColor="?attr/colorOnPrimary"
                     android:layout_weight="1"/>
 
-                <ImageButton
-                    android:id="@+id/apply"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_check"
-                    android:background="@android:color/transparent"
-                    app:tint="?attr/colorOnPrimary"
-                    tools:ignore="ContentDescription"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/build_graph_info"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_info"
+                        tools:ignore="ContentDescription" />
+
+                    <ImageButton
+                        android:id="@+id/apply"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_check"
+                        tools:ignore="ContentDescription"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 

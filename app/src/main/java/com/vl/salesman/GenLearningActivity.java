@@ -13,7 +13,6 @@ import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -125,12 +124,7 @@ public class GenLearningActivity extends AppCompatActivity implements SeekBar.On
     public void onStopTrackingTouch(SeekBar seekBar) {}
 
     private void onMalformedInput(String message) {
-        new AlertDialog.Builder(this)
-                .setMessage(message)
-                .setTitle("Проверьте правильность ввода")
-                .setPositiveButton("Ок", (d, i) -> {})
-                .setCancelable(true)
-                .show();
+        InfoDialog.show(this, "Проверьте правильность ввода", message);
     }
 
     private void onResult(GeneticModel.Result<VerbosePath> result) {

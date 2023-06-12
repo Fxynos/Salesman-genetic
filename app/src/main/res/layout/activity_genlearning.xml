@@ -24,12 +24,10 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/build_graph_info"
+                    android:id="@+id/back"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_info"
-                    android:background="@android:color/transparent"
-                    app:tint="?attr/colorOnPrimary"
+                    android:src="@drawable/ic_back"
                     tools:ignore="ContentDescription" />
 
                 <TextView
@@ -38,6 +36,14 @@
                     android:gravity="center_horizontal"
                     android:text="@string/learning_strategy"
                     android:textColor="?attr/colorOnPrimary" />
+
+                <ImageButton
+                    android:id="@+id/build_graph_info"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="end"
+                    android:src="@drawable/ic_info"
+                    tools:ignore="ContentDescription" />
 
             </FrameLayout>
 

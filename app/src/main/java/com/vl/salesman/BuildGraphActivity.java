@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 
@@ -71,12 +70,11 @@ public class BuildGraphActivity extends AppCompatActivity implements View.OnClic
                 Point checkedStartPoint = binding.buildGraphSurface.getPoints().stream()
                         .filter(Point::isChecked).findAny().orElse(null);
                 if (checkedStartPoint == null)
-                    new AlertDialog.Builder(this)
-                            .setCancelable(true)
-                            .setTitle("Выберите стартовую точку")
-                            .setMessage("Коснитесь точки, чтобы выбрать её")
-                            .setPositiveButton("Ок", (dI, i) -> {})
-                            .show();
+                    InfoDialog.show(
+                            this,
+                            "Выберите стартовую точку",
+                            "Коснитесь точки, чтобы выбрать её"
+                    );
                 else {
                     GraphData graph = new GraphData();
                     graph.setPoints(binding.buildGraphSurface.getPoints().stream()
