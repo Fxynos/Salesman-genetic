@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 
@@ -49,6 +50,8 @@ public class BuildGraphActivity extends AppCompatActivity implements View.OnClic
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(@NotNull View view) {
+        if (surfaceController.isGraphInIntermediateState())
+            return;
         switch (view.getId()) {
             case R.id.floating_button:
                 if (isPointChecked) {
@@ -65,15 +68,23 @@ public class BuildGraphActivity extends AppCompatActivity implements View.OnClic
                 // TODO
                 break;
             case R.id.apply:
-                if (!surfaceController.isGraphInIntermediateState()) {
+                Point checkedStartPoint = binding.buildGraphSurface.getPoints().stream()
+                        .filter(Point::isChecked).findAny().orElse(null);
+                if (checkedStartPoint == null)
+                    new AlertDialog.Builder(this)
+                            .setCancelable(true)
+                            .setTitle("Выберите стартовую точку")
+                            .setMessage("Коснитесь точки, чтобы выбрать её")
+                            .setPositiveButton("Ок", (dI, i) -> {})
+                            .show();
+                else {
                     GraphData graph = new GraphData();
                     graph.setPoints(binding.buildGraphSurface.getPoints().stream()
                             .map(Point::getPoint).collect(Collectors.toSet()));
                     graph.setConnects(binding.buildGraphSurface.getContacts().stream()
                             .map(p -> new Pair<>(p.first[0].getPoint(), p.first[1].getPoint()))
                             .collect(Collectors.toSet()));
-                    graph.setStartPoint(binding.buildGraphSurface.getPoints().stream()
-                            .findAny().orElseThrow(RuntimeException::new));
+                    graph.setStartPoint(checkedStartPoint);
                     Intent intent = new Intent(this, GenLearningActivity.class);
                     intent.putExtras(graph.getBundle());
                     startActivity(intent);

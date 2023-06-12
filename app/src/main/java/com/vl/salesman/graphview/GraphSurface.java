@@ -34,7 +34,7 @@ public class GraphSurface extends SurfaceView implements SurfaceHolder.Callback 
 
     private final Set<Point> points = new CopyOnWriteArraySet<>();
     private final Set<Pair<Point[], Boolean>> contacts = new CopyOnWriteArraySet<>();
-    private volatile PointF pointer;
+    private final Point pointer = new Point(0, 0) {{ setChecked(false); }};
 
     @ColorInt
     private final int regularColor, activeColor;
@@ -55,11 +55,9 @@ public class GraphSurface extends SurfaceView implements SurfaceHolder.Callback 
         }
     }
 
-    /**
-     * @param pointer null for hidden pointer
-     */
-    public void movePointerTo(@Nullable PointF pointer) {
-        this.pointer = pointer;
+    @NonNull
+    public Point getPointer() { // modifiable pointer; setChecked() to draw
+        return pointer;
     }
 
     public PointF getOffsetVector() {
@@ -174,7 +172,7 @@ public class GraphSurface extends SurfaceView implements SurfaceHolder.Callback 
                         RADIUS,
                         point.isChecked() ? activeFill : regularFill
                 );
-            if (pointer != null)
+            if (pointer.isChecked())
                 canvas.drawCircle(
                         pointer.x + offsetVector.x,
                         pointer.y + offsetVector.y,
