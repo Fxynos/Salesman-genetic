@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 
-import com.vl.genmodel.Path;
-import com.vl.genmodel.VerbosePath;
+import com.vl.genmodel.salesman.Path;
+import com.vl.genmodel.salesman.VerbosePath;
 import com.vl.salesman.bundlewrapper.GraphData;
 import com.vl.salesman.bundlewrapper.ResultData;
 import com.vl.salesman.databinding.ActivityResultBinding;

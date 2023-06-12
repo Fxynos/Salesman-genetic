@@ -1,4 +1,4 @@
-package com.vl.genmodel;
+package com.vl.genmodel.salesman;
 
 public class Path {
     private final int[] points;

@@ -1,4 +1,6 @@
-package com.vl.genmodel;
+package com.vl.genmodel.salesman;
+
+import com.vl.genmodel.Mutator;
 
 import java.util.Arrays;
 import java.util.Random;

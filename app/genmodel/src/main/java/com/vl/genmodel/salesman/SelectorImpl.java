@@ -1,4 +1,7 @@
-package com.vl.genmodel;
+package com.vl.genmodel.salesman;
+
+import com.vl.genmodel.Selector;
+import com.vl.genmodel.salesman.VerbosePath;
 
 import java.util.Arrays;
 

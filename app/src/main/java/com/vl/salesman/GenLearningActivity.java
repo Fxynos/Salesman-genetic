@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,12 +17,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
-import com.vl.genmodel.BreederImpl;
+import com.vl.genmodel.salesman.BreederImpl;
 import com.vl.genmodel.GeneticModel;
-import com.vl.genmodel.MutatorImpl;
-import com.vl.genmodel.PopulationSupplierImpl;
-import com.vl.genmodel.SelectorImpl;
-import com.vl.genmodel.VerbosePath;
+import com.vl.genmodel.salesman.MutatorImpl;
+import com.vl.genmodel.salesman.PopulationSupplierImpl;
+import com.vl.genmodel.salesman.SelectorImpl;
+import com.vl.genmodel.salesman.VerbosePath;
 import com.vl.salesman.bundlewrapper.GraphData;
 import com.vl.salesman.bundlewrapper.ResultData;
 import com.vl.salesman.databinding.ActivityGenlearningBinding;
@@ -95,7 +94,7 @@ public class GenLearningActivity extends AppCompatActivity implements SeekBar.On
 
         Double[][] distances = graphData.getDistances();
         int startPoint = new LinkedList<>(graphData.getPoints()).indexOf(graphData.getStartPoint());
-        new Teacher(
+        new GenModelController(
                 GeneticModel.<VerbosePath>newBuilder()
                         .setBreeder(
                                 new BreederImpl(distances)
@@ -135,8 +134,6 @@ public class GenLearningActivity extends AppCompatActivity implements SeekBar.On
     }
 
     private void onResult(GeneticModel.Result<VerbosePath> result) {
-        Toast.makeText(this, String.format(Locale.getDefault(), "%d it-s, %d moves", result.iterations, result.population[0].getPoints().length), Toast.LENGTH_LONG).show();
-
         ResultData data = new ResultData();
         data.setIterationsCount(result.iterations);
         data.setPath(result.population[0].getPoints());
@@ -144,7 +141,7 @@ public class GenLearningActivity extends AppCompatActivity implements SeekBar.On
         Intent intent = new Intent(this, ResultActivity.class);
         intent.putExtras(data.getBundle());
         startActivity(intent);
-        //finish(); TODO
+        finish();
     }
 }
 
@@ -175,7 +172,7 @@ class StrategyAdapter extends ArrayAdapter<GeneticModel.BreedStrategy> {
     }
 }
 
-class Teacher extends Timer {
+class GenModelController extends Timer {
 
     private final static int DELAY = 50;
     private final int pointsCount;
@@ -188,7 +185,7 @@ class Teacher extends Timer {
             visitedAll = false,
             returnedToOrigin = false;
 
-    public Teacher(
+    public GenModelController(
             GeneticModel<VerbosePath> geneticModel,
             long iterations,
             int pointsCount, // to check whether path contains all points

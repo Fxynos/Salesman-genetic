@@ -1,4 +1,6 @@
-package com.vl.genmodel;
+package com.vl.genmodel.salesman;
+
+import com.vl.genmodel.salesman.Path;
 
 import java.util.stream.IntStream;
 

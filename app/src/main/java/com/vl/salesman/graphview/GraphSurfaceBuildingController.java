@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 @SuppressLint("ClickableViewAccessibility")
 public class GraphSurfaceBuildingController {
-    private final static float POINT_CLICK_RADIUS = 35f;
+    private final static float POINT_CLICK_RADIUS = 60f;
 
     private final GraphSurface surfaceView;
     private final TouchHandler touchHandler;

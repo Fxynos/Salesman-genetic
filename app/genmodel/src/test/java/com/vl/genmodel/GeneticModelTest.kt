@@ -1,5 +1,10 @@
 package com.vl.genmodel
 
+import com.vl.genmodel.salesman.BreederImpl
+import com.vl.genmodel.salesman.MutatorImpl
+import com.vl.genmodel.salesman.PopulationSupplierImpl
+import com.vl.genmodel.salesman.SelectorImpl
+import com.vl.genmodel.salesman.VerbosePath
 import org.junit.jupiter.api.RepeatedTest
 
 class GeneticModelTest {

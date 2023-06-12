@@ -1,16 +1,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Theme.Salesman" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+
+        <item name="colorPrimary">@color/purple</item>
+        <item name="colorPrimaryVariant">@color/dark_purple</item>
         <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
+
+        <item name="colorSecondary">@color/lime</item>
+        <item name="colorSecondaryVariant">@color/green_gray</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
+
+        <item name="colorAccent">?attr/colorPrimary</item>
+        <item name="colorError">@color/skin</item>
+
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="android:colorControlNormal">?attr/colorOnSecondary</item>
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <item name="android:windowBackground">?attr/colorOnPrimary</item>
+
+        <item name="editTextStyle">@style/EditTextStyle</item>
+        <item name="appBarLayoutStyle">@style/AppBarLayoutStyle</item>
+        <item name="materialCardViewStyle">@style/MaterialCardStyle</item>
+        <item name="materialButtonStyle">@style/ButtonStyle</item>
+        <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
+
     </style>
 </resources>

@@ -93,7 +93,7 @@ public class GraphSurfaceVisualisationController {
 
     private class Visualizer extends AnimatorListenerAdapter implements ValueAnimator.AnimatorUpdateListener {
 
-        private final static int DURATION = 1000;
+        private final static int DURATION = 2000;
 
         private final Point[] path;
         private int pos = 0;

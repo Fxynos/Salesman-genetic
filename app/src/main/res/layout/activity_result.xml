@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardElevation="2dp"
-        app:shapeAppearanceOverlay="@style/TopCardAppearance">
+        app:shapeAppearanceOverlay="@style/TopElementAppearance">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -79,9 +79,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
-            android:backgroundTint="?attr/colorPrimary"
-            app:tint="?attr/colorOnPrimary"
-            app:borderWidth="0dp"
             tools:src="@drawable/ic_play"
             tools:ignore="ContentDescription" />
 

@@ -1,5 +1,7 @@
 package com.vl.genmodel
 
+import com.vl.genmodel.salesman.SelectorImpl
+import com.vl.genmodel.salesman.VerbosePath
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -7,7 +9,7 @@ import java.util.stream.Stream
 
 class SelectorTest {
     companion object {
-        val selector = com.vl.genmodel.SelectorImpl()
+        val selector = SelectorImpl()
 
         @JvmStatic
         fun supply_selectorIsCorrect(): Stream<Triple<VerbosePath, VerbosePath, Int>> {
@@ -29,7 +31,10 @@ class SelectorTest {
                     0
                 ),
                 Triple(
-                    VerbosePath(intArrayOf(0, 1, 2), distances),
+                    VerbosePath(
+                        intArrayOf(0, 1, 2),
+                        distances
+                    ),
                     VerbosePath(
                         intArrayOf(0, 1, 2, 0),
                         distances
@@ -37,13 +42,25 @@ class SelectorTest {
                     1
                 ),
                 Triple(
-                    VerbosePath(intArrayOf(0, 1, 2), distances),
-                    VerbosePath(intArrayOf(0, 1), distances),
+                    VerbosePath(
+                        intArrayOf(0, 1, 2),
+                        distances
+                    ),
+                    VerbosePath(
+                        intArrayOf(0, 1),
+                        distances
+                    ),
                     -1
                 ),
                 Triple(
-                    VerbosePath(intArrayOf(0, 1, 2), distances),
-                    VerbosePath(intArrayOf(2, 0, 1), distances),
+                    VerbosePath(
+                        intArrayOf(0, 1, 2),
+                        distances
+                    ),
+                    VerbosePath(
+                        intArrayOf(2, 0, 1),
+                        distances
+                    ),
                     1
                 )
             )

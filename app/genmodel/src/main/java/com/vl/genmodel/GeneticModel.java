@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class GeneticModel<T extends Path> implements Cloneable {
+public class GeneticModel<T> implements Cloneable {
     private PopulationSupplier<T> populationSupplier;
     private Selector<T> selector;
     private Breeder<T> breeder;
@@ -79,7 +79,7 @@ public class GeneticModel<T extends Path> implements Cloneable {
 
     /* Builder */
 
-    public static <T extends Path> GeneticModel<T>.Builder newBuilder() {
+    public static <T> GeneticModel<T>.Builder newBuilder() {
         return new GeneticModel<T>().new Builder();
     }
 
@@ -181,15 +181,15 @@ public class GeneticModel<T extends Path> implements Cloneable {
                     );
         }
 
-        private void insert(T path) {
+        private void insert(T instance) {
             int index = populationSize - 1;
-            while (index >= 0 && selector.compare(path, population[index]) <= 0) {
+            while (index >= 0 && selector.compare(instance, population[index]) <= 0) {
                 if (index > 0)
                     population[index] = population[index - 1];
                 index--;
             }
             if (++index < populationSize)
-                population[index] = path;
+                population[index] = instance;
         }
 
         private Pair<T, T> getParents() {
@@ -208,11 +208,11 @@ public class GeneticModel<T extends Path> implements Cloneable {
         }
     }
 
-    public interface Callback<T extends Path> {
+    public interface Callback<T> {
         void onResult(Result<T> result);
     }
 
-    public static class Result<T extends Path> {
+    public static class Result<T> {
         public final long iterations;
         public final T[] population;
 

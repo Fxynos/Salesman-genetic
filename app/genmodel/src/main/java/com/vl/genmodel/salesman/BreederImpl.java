@@ -1,5 +1,6 @@
-package com.vl.genmodel;
+package com.vl.genmodel.salesman;
 
+import com.vl.genmodel.Breeder;
 import com.vl.genmodel.util.Pair;
 
 import java.util.Arrays;

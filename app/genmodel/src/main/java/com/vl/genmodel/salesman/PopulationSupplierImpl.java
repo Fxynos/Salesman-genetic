@@ -1,4 +1,7 @@
-package com.vl.genmodel;
+package com.vl.genmodel.salesman;
+
+import com.vl.genmodel.PopulationSupplier;
+import com.vl.genmodel.salesman.VerbosePath;
 
 import org.jetbrains.annotations.NotNull;
 
