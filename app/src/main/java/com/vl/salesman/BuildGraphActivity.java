@@ -15,6 +15,7 @@ import com.vl.salesman.graphview.GraphSurfaceBuildingController;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,10 +30,16 @@ public class BuildGraphActivity extends AppCompatActivity implements View.OnClic
         binding = ActivityBuildGraphBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         updateFloatingButtonIcon();
-        Stream.of(binding.floatingButton, binding.buildGraphInfo, binding.apply)
+        Stream.of(binding.floatingButton, binding.buildGraphInfo, binding.apply, binding.back)
                 .forEach(b -> b.setOnClickListener(this));
         surfaceController = new GraphSurfaceBuildingController(binding.buildGraphSurface);
         surfaceController.setCallback(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, MenuActivity.class));
+        finish();
     }
 
     @Override
@@ -67,27 +74,42 @@ public class BuildGraphActivity extends AppCompatActivity implements View.OnClic
                 // TODO
                 break;
             case R.id.apply:
+                if (!binding.buildGraphSurface.getPoints().stream().allMatch(
+                        point -> binding.buildGraphSurface.getContacts().stream()
+                                .flatMap(pair -> Arrays.stream(pair.first))
+                                .anyMatch(p -> p.equals(point))
+                )) {
+                    InfoDialog.show(
+                            this,
+                            "Изолированная точка",
+                            "Каждая точка должна граничить как минимум с одной другой"
+                    );
+                    return;
+                }
                 Point checkedStartPoint = binding.buildGraphSurface.getPoints().stream()
                         .filter(Point::isChecked).findAny().orElse(null);
-                if (checkedStartPoint == null)
+                if (checkedStartPoint == null) {
                     InfoDialog.show(
                             this,
                             "Выберите стартовую точку",
                             "Коснитесь точки, чтобы выбрать её"
                     );
-                else {
-                    GraphData graph = new GraphData();
-                    graph.setPoints(binding.buildGraphSurface.getPoints().stream()
-                            .map(Point::getPoint).collect(Collectors.toSet()));
-                    graph.setConnects(binding.buildGraphSurface.getContacts().stream()
-                            .map(p -> new Pair<>(p.first[0].getPoint(), p.first[1].getPoint()))
-                            .collect(Collectors.toSet()));
-                    graph.setStartPoint(checkedStartPoint);
-                    Intent intent = new Intent(this, GenLearningActivity.class);
-                    intent.putExtras(graph.getBundle());
-                    startActivity(intent);
-                    finish();
+                    return;
                 }
+                GraphData graph = new GraphData();
+                graph.setPoints(binding.buildGraphSurface.getPoints().stream()
+                        .map(Point::getPoint).collect(Collectors.toSet()));
+                graph.setConnects(binding.buildGraphSurface.getContacts().stream()
+                        .map(p -> new Pair<>(p.first[0].getPoint(), p.first[1].getPoint()))
+                        .collect(Collectors.toSet()));
+                graph.setStartPoint(checkedStartPoint);
+                Intent intent = new Intent(this, GenLearningActivity.class);
+                intent.putExtras(graph.getBundle());
+                startActivity(intent);
+                finish();
+                break;
+            case R.id.back:
+                onBackPressed();
                 break;
         }
     }

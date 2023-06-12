@@ -1,5 +1,6 @@
 package com.vl.salesman;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,7 +36,7 @@ import java.util.TimerTask;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class GenLearningActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
+public class GenLearningActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
     private ActivityGenlearningBinding binding;
     private StrategyAdapter adapter;
@@ -49,7 +50,7 @@ public class GenLearningActivity extends AppCompatActivity implements SeekBar.On
         graphData = new GraphData(getIntent().getExtras());
         binding.strategies.setAdapter(adapter = new StrategyAdapter(this));
         binding.strategies.setSelection(0);
-        binding.launch.setOnClickListener(this::onLaunchClick);
+        Stream.of(binding.launch, binding.back).forEach(b -> b.setOnClickListener(this));
         binding.mutationChance.setOnSeekBarChangeListener(this);
         binding.mutationChance.setProgress(50);
         binding.iterations.setOnEditorActionListener((textView, i, keyEvent) -> {
@@ -58,7 +59,26 @@ public class GenLearningActivity extends AppCompatActivity implements SeekBar.On
         });
     }
 
-    private void onLaunchClick(View view) {
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, BuildGraphActivity.class));
+        finish();
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.back:
+                onBackPressed();
+                break;
+            case R.id.launch:
+                onLaunchLearning();
+                break;
+        }
+    }
+
+    private void onLaunchLearning() {
         if (Stream.of(
                 binding.genFrom,
                 binding.genTo,
@@ -131,9 +151,9 @@ public class GenLearningActivity extends AppCompatActivity implements SeekBar.On
         ResultData data = new ResultData();
         data.setIterationsCount(result.iterations);
         data.setPath(result.population[0].getPoints());
-        data.merge(graphData.getBundle());
+        graphData.merge(data.getBundle());
         Intent intent = new Intent(this, ResultActivity.class);
-        intent.putExtras(data.getBundle());
+        intent.putExtras(graphData.getBundle());
         startActivity(intent);
         finish();
     }

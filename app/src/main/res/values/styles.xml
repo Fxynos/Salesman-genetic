@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="WindowAnimationStyle" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/open_animation</item>
+        <item name="android:activityOpenExitAnimation">@anim/exit_animation</item>
+    </style>
+
     <style name="TopElementAppearance">
         <item name="cornerFamily">cut</item>
         <item name="cornerSizeBottomLeft">12dp</item>

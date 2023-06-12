@@ -1,10 +1,13 @@
 package com.vl.salesman;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.AttrRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 
@@ -23,8 +26,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-public class ResultActivity extends AppCompatActivity {
+public class ResultActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ActivityResultBinding binding;
     private ResultFieldsBinding resultBinding;
@@ -45,19 +49,40 @@ public class ResultActivity extends AppCompatActivity {
         result = new ResultData(getIntent().getExtras());
         graph = new GraphData(getIntent().getExtras());
         path = new VerbosePath(result.getPath(), graph.getDistances());
+        if (path.getPoints().length == 1) {
+            binding.play.setEnabled(false);
+            binding.play.setVisibility(View.GONE);
+        }
         initResultViews();
         initGraph();
         pathOfPoints = obtainPath(path);
-        binding.play.setOnClickListener(this::onPlayClicked);
+        Stream.of(binding.back, binding.play).forEach(b -> b.setOnClickListener(this));
     }
 
-    private void onPlayClicked(View view) {
-        if (visualization)
-            graphController.stopVisualization();
-        else
-            graphController.startVisualization(pathOfPoints);
-        visualization = !visualization;
-        updateFloatingButtonIcon();
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, GenLearningActivity.class);
+        intent.putExtras(graph.getBundle());
+        startActivity(intent);
+        finish();
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.back:
+                onBackPressed();
+                break;
+            case R.id.play:
+                if (visualization)
+                    graphController.stopVisualization();
+                else
+                    graphController.startVisualization(pathOfPoints);
+                visualization = !visualization;
+                updateFloatingButtonIcon();
+                break;
+        }
     }
 
     private void onVisualizationEnd() {
@@ -101,14 +126,14 @@ public class ResultActivity extends AppCompatActivity {
         return IntStream.of(path.getPoints()).mapToObj(points::get).toArray(Point[]::new);
     }
 
-    private int obtainColorSecondary() {
+    private int obtainThemeColor(@AttrRes int color) {
         TypedValue typed = new TypedValue();
-        getTheme().resolveAttribute(com.google.android.material.R.attr.colorSecondary, typed, true);
+        getTheme().resolveAttribute(color, typed, true);
         return typed.data;
     }
 
     private void checkmark(ImageView icon) {
-        icon.setColorFilter(obtainColorSecondary());
+        icon.setColorFilter(obtainThemeColor(com.google.android.material.R.attr.colorSecondary));
         icon.setImageResource(R.drawable.ic_check);
     }
 }

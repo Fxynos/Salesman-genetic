@@ -27,5 +27,7 @@
         <item name="materialButtonStyle">@style/ButtonStyle</item>
         <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
 
+        <item name="android:windowAnimationStyle">@style/WindowAnimationStyle</item>
+
     </style>
 </resources>

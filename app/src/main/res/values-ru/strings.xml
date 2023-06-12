@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Salesman</string>
+    <string name="app_name">Коммивояжер</string>
     <string name="build_graph">Построить граф</string>
     <string name="info">Информация</string>
     <string name="exit">Выход</string>
