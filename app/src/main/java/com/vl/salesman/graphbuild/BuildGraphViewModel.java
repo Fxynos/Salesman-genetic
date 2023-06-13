@@ -7,6 +7,7 @@ import com.vl.salesman.graphview.Point;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BuildGraphViewModel extends androidx.lifecycle.ViewModel {
     private final Set<Point> points = new HashSet<>();
@@ -21,10 +22,16 @@ public class BuildGraphViewModel extends androidx.lifecycle.ViewModel {
     }
 
     public void updatePoints(Collection<Point> points) {
-        this.points.addAll(points);
+        this.points.clear();
+        this.points.addAll(points.stream().map(p -> {
+            Point point = new Point(p);
+            point.setChecked(false);
+            return point;
+        }).collect(Collectors.toSet()));
     }
 
     public void updateConnects(Collection<Pair<Point[], Boolean>> connects) {
+        this.connects.clear();
         this.connects.addAll(connects);
     }
 }

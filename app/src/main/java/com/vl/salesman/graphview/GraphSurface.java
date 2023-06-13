@@ -69,22 +69,22 @@ public class GraphSurface extends SurfaceView implements SurfaceHolder.Callback 
 
     private float getMaxYOffset() {
         return getHeight() - (float) points.stream().mapToDouble(p -> p.y)
-                .min().orElseThrow(RuntimeException::new) - OFFSET_BORDER;
+                .min().orElse(0) - OFFSET_BORDER;
     }
 
     private float getMinYOffset() {
         return OFFSET_BORDER - (float) points.stream().mapToDouble(p -> p.y)
-                .max().orElseThrow(RuntimeException::new);
+                .max().orElse(0);
     }
 
     private float getMaxXOffset() {
         return getWidth() - (float) points.stream().mapToDouble(p -> p.x)
-                .min().orElseThrow(RuntimeException::new) - OFFSET_BORDER;
+                .min().orElse(0) - OFFSET_BORDER;
     }
 
     private float getMinXOffset() {
         return OFFSET_BORDER - (float) points.stream().mapToDouble(p -> p.x)
-                .max().orElseThrow(RuntimeException::new);
+                .max().orElse(0);
     }
 
     public Set<Point> getPoints() {

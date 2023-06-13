@@ -7,7 +7,7 @@
 
         <item name="colorSecondary">@color/lime</item>
         <item name="colorSecondaryVariant">@color/green_gray</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondary">@color/darkest_purple</item>
 
         <item name="colorAccent">?attr/colorPrimary</item>
         <item name="colorError">@color/skin</item>

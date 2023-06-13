@@ -30,7 +30,7 @@ public class GraphSurfaceVisualisationController {
         this.startPoint = startPoint;
         graphSurface.getPointer().set(startPoint);
         graphSurface.getPointer().setChecked(true);
-        graphSurface.setOnTouchListener(new MovementHandler());
+        graphSurface.setOnTouchListener(new MovementHandler(graphSurface));
         graphSurface.getPoints().stream()
                 .filter(p -> p.x == startPoint.x && p.y == startPoint.y).findAny()
                 .orElseThrow(() -> new RuntimeException("Graph must contain startPoint")).setChecked(true);
@@ -66,27 +66,6 @@ public class GraphSurfaceVisualisationController {
         ).collect(Collectors.toSet());
         graphSurface.getContacts().clear();
         graphSurface.getContacts().addAll(connections);
-    }
-
-    private class MovementHandler implements View.OnTouchListener {
-        private final PointF previousPosition = new PointF();
-
-        @Override
-        public boolean onTouch(View view, MotionEvent event) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    previousPosition.set(event.getX(), event.getY());
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    graphSurface.applyOffset(
-                            event.getX() - previousPosition.x,
-                            event.getY() - previousPosition.y
-                    );
-                    previousPosition.set(event.getX(), event.getY());
-                    break;
-            }
-            return true;
-        }
     }
 
     private class Visualizer extends AnimatorListenerAdapter implements ValueAnimator.AnimatorUpdateListener {

@@ -1,6 +1,7 @@
 package com.vl.salesman.graphview;
 
 import android.annotation.SuppressLint;
+import android.graphics.PointF;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,11 +18,13 @@ public class GraphSurfaceBuildingController {
 
     private final GraphSurface surfaceView;
     private final TouchHandler touchHandler;
+    private final MovementHandler movementHandler;
     private GraphSurfaceCallback listener;
     private boolean isPointPlacing = false;
 
     public GraphSurfaceBuildingController(GraphSurface surfaceView) {
         this.surfaceView = surfaceView;
+        movementHandler = new MovementHandler(surfaceView);
         surfaceView.setOnTouchListener(touchHandler = new TouchHandler());
     }
 
@@ -83,11 +86,13 @@ public class GraphSurfaceBuildingController {
                     }
                     if (clickPoint == null)
                         clickPoint = findAt(event);
+                    if (clickPoint == null)
+                        movementHandler.onTouch(view, event);
                     break;
 
                 case MotionEvent.ACTION_MOVE:
                     if (isPointPlacing)
-                        clickPoint.set(event.getX(), event.getY());
+                        clickPoint.set(pointOf(event));
                     else if (clickPoint != null && distance(event, clickPoint) > POINT_CLICK_RADIUS) {
                         clickPoint.setChecked(true);
                         clickConnection = new Pair<>(new Point[]{clickPoint, pointOf(event, false)}, true);
@@ -95,8 +100,9 @@ public class GraphSurfaceBuildingController {
                         surfaceView.getContacts().add(clickConnection);
                     } else if (clickConnection != null) {
                         Point pointTo = findAt(event);
-                        clickConnection.first[1].set(pointTo == null ? pointOf(event, false) : pointTo);
-                    }
+                        clickConnection.first[1].set(pointTo == null ? pointOf(event) : pointTo);
+                    } else if (clickPoint == null)
+                        movementHandler.onTouch(view, event);
                     break;
 
                 case MotionEvent.ACTION_UP:
@@ -133,7 +139,12 @@ public class GraphSurfaceBuildingController {
         }
 
         private float distance(@NotNull MotionEvent event, @NotNull Point point) {
-            return distance(event.getX(), event.getY(), point.x, point.y);
+            return distance(
+                    event.getX() - surfaceView.getOffsetVector().x,
+                    event.getY() - surfaceView.getOffsetVector().y,
+                    point.x,
+                    point.y
+            );
         }
 
         @Nullable
@@ -145,8 +156,15 @@ public class GraphSurfaceBuildingController {
             ).orElse(null);
         }
 
+        private PointF pointOf(MotionEvent event) {
+            return new PointF(
+                    event.getX() - surfaceView.getOffsetVector().x,
+                    event.getY() - surfaceView.getOffsetVector().y
+            );
+        }
+
         private Point pointOf(MotionEvent event, boolean checked) {
-            Point point = new Point(event.getX(), event.getY());
+            Point point = new Point(pointOf(event));
             point.setChecked(checked);
             return point;
         }
