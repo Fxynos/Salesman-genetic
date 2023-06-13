@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.vl.salesman.databinding.ActivityMenuBinding;
+import com.vl.salesman.graphbuild.BuildGraphActivity;
 
 import org.jetbrains.annotations.NotNull;
 

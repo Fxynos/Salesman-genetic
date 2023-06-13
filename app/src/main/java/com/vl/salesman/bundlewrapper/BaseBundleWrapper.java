@@ -5,7 +5,7 @@ import android.os.Bundle;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public abstract class BaseBundleWrapper {
+abstract class BaseBundleWrapper {
     private final Bundle bundle;
     private final Gson gson = new Gson();
 

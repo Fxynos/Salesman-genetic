@@ -1,4 +1,4 @@
-package com.vl.salesman;
+package com.vl.salesman.graphbuild;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -7,10 +7,15 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.vl.salesman.genlearning.GenLearningActivity;
+import com.vl.salesman.InfoDialog;
+import com.vl.salesman.MenuActivity;
+import com.vl.salesman.R;
 import com.vl.salesman.bundlewrapper.GraphData;
 import com.vl.salesman.databinding.ActivityBuildGraphBinding;
-import com.vl.salesman.item.Point;
+import com.vl.salesman.graphview.Point;
 import com.vl.salesman.graphview.GraphSurfaceBuildingController;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +28,7 @@ public class BuildGraphActivity extends AppCompatActivity implements View.OnClic
     private ActivityBuildGraphBinding binding;
     private GraphSurfaceBuildingController surfaceController;
     private boolean isPointChecked = false;
+    private BuildGraphViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +36,22 @@ public class BuildGraphActivity extends AppCompatActivity implements View.OnClic
         binding = ActivityBuildGraphBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         updateFloatingButtonIcon();
+
+        viewModel = new ViewModelProvider(this).get(BuildGraphViewModel.class);
+        binding.buildGraphSurface.getPoints().addAll(viewModel.getPoints());
+        binding.buildGraphSurface.getContacts().addAll(viewModel.getConnects());
+
         Stream.of(binding.floatingButton, binding.buildGraphInfo, binding.apply, binding.back)
                 .forEach(b -> b.setOnClickListener(this));
         surfaceController = new GraphSurfaceBuildingController(binding.buildGraphSurface);
         surfaceController.setCallback(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        viewModel.updatePoints(binding.buildGraphSurface.getPoints());
+        viewModel.updateConnects(binding.buildGraphSurface.getContacts());
     }
 
     @Override

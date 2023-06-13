@@ -12,8 +12,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
-import com.vl.salesman.item.Point;
-
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -17,8 +17,9 @@ import com.vl.salesman.bundlewrapper.GraphData;
 import com.vl.salesman.bundlewrapper.ResultData;
 import com.vl.salesman.databinding.ActivityResultBinding;
 import com.vl.salesman.databinding.ResultFieldsBinding;
+import com.vl.salesman.genlearning.GenLearningActivity;
 import com.vl.salesman.graphview.GraphSurfaceVisualisationController;
-import com.vl.salesman.item.Point;
+import com.vl.salesman.graphview.Point;
 
 import java.util.ArrayList;
 import java.util.Arrays;

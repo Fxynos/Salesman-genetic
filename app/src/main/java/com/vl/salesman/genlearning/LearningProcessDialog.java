@@ -1,4 +1,4 @@
-package com.vl.salesman;
+package com.vl.salesman.genlearning;
 
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.vl.salesman.R;
 import com.vl.salesman.databinding.FragmentLearningProcessBinding;
 import com.vl.salesman.databinding.ResultFieldsBinding;
 

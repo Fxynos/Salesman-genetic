@@ -6,8 +6,6 @@ import android.view.View;
 
 import androidx.core.util.Pair;
 
-import com.vl.salesman.item.Point;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

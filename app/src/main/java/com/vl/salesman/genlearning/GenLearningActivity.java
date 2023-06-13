@@ -1,22 +1,14 @@
-package com.vl.salesman;
+package com.vl.salesman.genlearning;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.vl.genmodel.salesman.BreederImpl;
 import com.vl.genmodel.GeneticModel;
@@ -24,17 +16,16 @@ import com.vl.genmodel.salesman.MutatorImpl;
 import com.vl.genmodel.salesman.PopulationSupplierImpl;
 import com.vl.genmodel.salesman.SelectorImpl;
 import com.vl.genmodel.salesman.VerbosePath;
+import com.vl.salesman.InfoDialog;
+import com.vl.salesman.R;
+import com.vl.salesman.ResultActivity;
 import com.vl.salesman.bundlewrapper.GraphData;
 import com.vl.salesman.bundlewrapper.ResultData;
 import com.vl.salesman.databinding.ActivityGenlearningBinding;
-import com.vl.salesman.databinding.SpinnerStrategyBinding;
+import com.vl.salesman.graphbuild.BuildGraphActivity;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class GenLearningActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
@@ -42,6 +33,7 @@ public class GenLearningActivity extends AppCompatActivity implements View.OnCli
     private ActivityGenlearningBinding binding;
     private StrategyAdapter adapter;
     private GraphData graphData;
+    private GenLearningViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +50,30 @@ public class GenLearningActivity extends AppCompatActivity implements View.OnCli
             textView.clearFocus();
             return false;
         });
+        viewModel = new ViewModelProvider(this).get(GenLearningViewModel.class);
+        viewModel.setResultCallback(this::onResult);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GenModelController controller = viewModel.getLearningController();
+        if (controller != null)
+            controller.showDialog(getSupportFragmentManager());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GenModelController controller = viewModel.getLearningController();
+        if (controller != null)
+            controller.hideDialog();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        viewModel.setResultCallback(null); // to prevent memory leaks
     }
 
     @Override
@@ -117,7 +133,8 @@ public class GenLearningActivity extends AppCompatActivity implements View.OnCli
 
         Double[][] distances = graphData.getDistances();
         int startPoint = new LinkedList<>(graphData.getPoints()).indexOf(graphData.getStartPoint());
-        new GenModelController(
+        viewModel.onLearningLaunch(
+                new GenModelController(
                 GeneticModel.<VerbosePath>newBuilder()
                         .setBreeder(
                                 new BreederImpl(distances)
@@ -132,10 +149,10 @@ public class GenLearningActivity extends AppCompatActivity implements View.OnCli
                         ).setPopulationSupplier(
                                 new PopulationSupplierImpl(genFrom, genTo, distances, startPoint)
                         ).setPopulationSize(population)
-                        .build(), iterations, distances.length, getSupportFragmentManager(),
-                        getResources().getDisplayMetrics(),
-                        this::onResult
+                        .build(), iterations, distances.length, getResources().getDisplayMetrics()
+                )
         );
+        viewModel.getLearningController().showDialog(getSupportFragmentManager());
     }
 
     @Override
@@ -162,103 +179,5 @@ public class GenLearningActivity extends AppCompatActivity implements View.OnCli
         intent.putExtras(graphData.getBundle());
         startActivity(intent);
         finish();
-    }
-}
-
-class StrategyAdapter extends ArrayAdapter<GeneticModel.BreedStrategy> {
-
-    public StrategyAdapter(@NonNull Context context) {
-        super(context, R.layout.spinner_strategy, GeneticModel.BreedStrategy.values());
-    }
-
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        SpinnerStrategyBinding binding = convertView == null ?
-                SpinnerStrategyBinding.inflate(LayoutInflater.from(getContext())) :
-                SpinnerStrategyBinding.bind(convertView);
-        switch (getItem(position)) {
-            case BEST: binding.strategy.setText("Только двое лучших"); break;
-            case BEST_TO_ALL: binding.strategy.setText("Лучший с любым из популяции"); break;
-            case ALL: binding.strategy.setText("Любые двое из популяции"); break;
-            default: throw new RuntimeException(); // unreachable
-        }
-        return binding.getRoot();
-    }
-
-    @Override
-    public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        return getView(position, convertView, parent);
-    }
-}
-
-class GenModelController extends Timer {
-
-    private final static int DELAY = 50;
-    private final int pointsCount;
-    private final long iterations;
-    private final GeneticModel<VerbosePath> geneticModel;
-    private final DisplayMetrics metrics;
-    private final LearningProcessDialog dialog;
-    private final Consumer<GeneticModel.Result<VerbosePath>> onComplete;
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
-    private boolean
-            visitedAll = false,
-            returnedToOrigin = false;
-
-    public GenModelController(
-            GeneticModel<VerbosePath> geneticModel,
-            long iterations,
-            int pointsCount, // to check whether path contains all points
-            FragmentManager fragmentManager,
-            DisplayMetrics metrics, // to convert coordinates to cm
-            Consumer<GeneticModel.Result<VerbosePath>> onComplete) {
-        this.metrics = metrics;
-        this.geneticModel = geneticModel;
-        this.iterations = iterations;
-        this.pointsCount = pointsCount;
-        this.dialog = new LearningProcessDialog();
-        this.onComplete = onComplete;
-        dialog.setOnCompleteClickListener(this::onCompleteClick);
-        dialog.show(fragmentManager, null);
-        geneticModel.start(iterations);
-        geneticModel.requestResult(this::onResult, false);
-        schedule(new Task(), DELAY, DELAY);
-    }
-
-    public void onResult(GeneticModel.Result<VerbosePath> result) {
-        cancel();
-        mainHandler.post(() -> {
-            dialog.dismiss();
-            onComplete.accept(result);
-        });
-    }
-
-    private void onCompleteClick(View view) {
-        geneticModel.awaitResult(true);
-    }
-
-    private class Task extends TimerTask {
-        @Override
-        public void run() {
-            GeneticModel.Result<VerbosePath> result = geneticModel.getIntermediateResult();
-            if (result != null) mainHandler.post(() -> {
-                int[] points = result.population[0].getPoints();
-                if (!visitedAll && Arrays.stream(points).distinct().count() == pointsCount) {
-                    visitedAll = true;
-                    dialog.markVisitedAllPoints();
-                }
-                if (!returnedToOrigin) {
-                    if (points[0] == points[points.length - 1]) {
-                        returnedToOrigin = true;
-                        dialog.markReturnedToOrigin();
-                    }
-                }
-                dialog.setLength(MetricsConverter.fromCoordinatesToCentimeters(metrics, result.population[0].getLength()));
-                dialog.setPathPointsCount(points.length);
-                dialog.setProgress(result.iterations / (double) iterations);
-                dialog.setIterationsCount(result.iterations);
-            });
-        }
     }
 }

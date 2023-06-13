@@ -1,4 +1,4 @@
-package com.vl.salesman.item;
+package com.vl.salesman.graphview;
 
 import android.graphics.PointF;
 

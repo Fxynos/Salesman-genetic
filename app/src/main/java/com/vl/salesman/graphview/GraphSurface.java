@@ -14,11 +14,9 @@ import android.view.SurfaceView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import com.vl.salesman.R;
-import com.vl.salesman.item.Point;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
