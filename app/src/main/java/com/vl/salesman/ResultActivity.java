@@ -56,7 +56,7 @@ public class ResultActivity extends AppCompatActivity implements View.OnClickLis
         initResultViews();
         initGraph();
         pathOfPoints = obtainPath(path);
-        Stream.of(binding.back, binding.play).forEach(b -> b.setOnClickListener(this));
+        Stream.of(binding.back, binding.play, binding.resultInfo).forEach(b -> b.setOnClickListener(this));
     }
 
     @Override
@@ -73,6 +73,9 @@ public class ResultActivity extends AppCompatActivity implements View.OnClickLis
         switch (view.getId()) {
             case R.id.back:
                 onBackPressed();
+                break;
+            case R.id.result_info:
+                InfoDialog.show(this, getString(R.string.hint), getString(R.string.result_hint));
                 break;
             case R.id.play:
                 if (visualization)
@@ -95,7 +98,7 @@ public class ResultActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void initResultViews() {
-        resultBinding.length.setText(String.format(Locale.getDefault(), "%.1f", path.getLength()));
+        resultBinding.length.setText(String.format(Locale.getDefault(), "%.1f", MetricsConverter.fromCoordinatesToCentimeters(getResources().getDisplayMetrics(), path.getLength())));
         resultBinding.pointsCount.setText(String.format(Locale.getDefault(), "%d", path.getPoints().length));
         if (path.getPoints()[0] == path.getPoints()[path.getPoints().length - 1])
             checkmark(resultBinding.returnCheck);

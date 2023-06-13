@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,7 @@ public class GenLearningActivity extends AppCompatActivity implements View.OnCli
         graphData = new GraphData(getIntent().getExtras());
         binding.strategies.setAdapter(adapter = new StrategyAdapter(this));
         binding.strategies.setSelection(0);
-        Stream.of(binding.launch, binding.back).forEach(b -> b.setOnClickListener(this));
+        Stream.of(binding.launch, binding.back, binding.learningInfo).forEach(b -> b.setOnClickListener(this));
         binding.mutationChance.setOnSeekBarChangeListener(this);
         binding.mutationChance.setProgress(50);
         binding.iterations.setOnEditorActionListener((textView, i, keyEvent) -> {
@@ -71,6 +72,9 @@ public class GenLearningActivity extends AppCompatActivity implements View.OnCli
         switch (view.getId()) {
             case R.id.back:
                 onBackPressed();
+                break;
+            case R.id.learning_info:
+                InfoDialog.show(this, getString(R.string.hint), getString(R.string.learning_hint));
                 break;
             case R.id.launch:
                 onLaunchLearning();
@@ -128,7 +132,9 @@ public class GenLearningActivity extends AppCompatActivity implements View.OnCli
                         ).setPopulationSupplier(
                                 new PopulationSupplierImpl(genFrom, genTo, distances, startPoint)
                         ).setPopulationSize(population)
-                        .build(), iterations, distances.length, getSupportFragmentManager(), this::onResult
+                        .build(), iterations, distances.length, getSupportFragmentManager(),
+                        getResources().getDisplayMetrics(),
+                        this::onResult
         );
     }
 
@@ -192,6 +198,7 @@ class GenModelController extends Timer {
     private final int pointsCount;
     private final long iterations;
     private final GeneticModel<VerbosePath> geneticModel;
+    private final DisplayMetrics metrics;
     private final LearningProcessDialog dialog;
     private final Consumer<GeneticModel.Result<VerbosePath>> onComplete;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -204,7 +211,9 @@ class GenModelController extends Timer {
             long iterations,
             int pointsCount, // to check whether path contains all points
             FragmentManager fragmentManager,
+            DisplayMetrics metrics, // to convert coordinates to cm
             Consumer<GeneticModel.Result<VerbosePath>> onComplete) {
+        this.metrics = metrics;
         this.geneticModel = geneticModel;
         this.iterations = iterations;
         this.pointsCount = pointsCount;
@@ -245,7 +254,7 @@ class GenModelController extends Timer {
                         dialog.markReturnedToOrigin();
                     }
                 }
-                dialog.setLength(result.population[0].getLength());
+                dialog.setLength(MetricsConverter.fromCoordinatesToCentimeters(metrics, result.population[0].getLength()));
                 dialog.setPathPointsCount(points.length);
                 dialog.setProgress(result.iterations / (double) iterations);
                 dialog.setIterationsCount(result.iterations);

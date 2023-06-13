@@ -71,7 +71,7 @@ public class BuildGraphActivity extends AppCompatActivity implements View.OnClic
                 }
                 break;
             case R.id.build_graph_info:
-                // TODO
+                InfoDialog.show(this, getString(R.string.hint), getString(R.string.build_graph_hint));
                 break;
             case R.id.apply:
                 if (!binding.buildGraphSurface.getPoints().stream().allMatch(

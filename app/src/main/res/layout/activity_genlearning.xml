@@ -38,7 +38,7 @@
                     android:textColor="?attr/colorOnPrimary" />
 
                 <ImageButton
-                    android:id="@+id/build_graph_info"
+                    android:id="@+id/learning_info"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="end"

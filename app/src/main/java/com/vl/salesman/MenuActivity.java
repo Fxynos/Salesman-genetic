@@ -34,7 +34,7 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
                 finish();
                 break;
             case R.id.info:
-                // TODO
+                InfoDialog.show(this, getString(R.string.hint), getString(R.string.menu_hint));
                 break;
             case R.id.exit:
                 finish();
