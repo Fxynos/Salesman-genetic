@@ -45,7 +45,7 @@ class GenModelController extends Timer {
         this.iterations = iterations;
         this.pointsCount = pointsCount;
         geneticModel.start(iterations);
-        geneticModel.requestResult(this::onResult, false);
+        geneticModel.requestResult(false, this::onResult);
         schedule(new Task(), DELAY, DELAY);
     }
 

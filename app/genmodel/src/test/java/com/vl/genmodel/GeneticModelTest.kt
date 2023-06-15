@@ -1,13 +1,36 @@
 package com.vl.genmodel
 
+import com.vl.genmodel.GeneticModel.BreedStrategy
 import com.vl.genmodel.salesman.BreederImpl
 import com.vl.genmodel.salesman.MutatorImpl
 import com.vl.genmodel.salesman.PopulationSupplierImpl
 import com.vl.genmodel.salesman.SelectorImpl
 import com.vl.genmodel.salesman.VerbosePath
 import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
+import java.lang.IllegalStateException
 
 class GeneticModelTest {
+    companion object {
+        const val iterations = 10_000L
+
+        private fun printAndAssertResult(
+            result: GeneticModel.Result<VerbosePath>,
+            startMs: Long,
+            assertedMax: Double
+        ) {
+            println("${System.currentTimeMillis() - startMs} ms for $iterations iterations")
+            val best = result.population[0]
+            println("${result.iterations} iterations: ${best.length} ${best.points.contentToString()}")
+            assert(best.length <= assertedMax) {
+                "${result.iterations} iterations: ${best.length} ${best.points.contentToString()}"
+            }
+        }
+    }
+
     private val distances = arrayOf(
         arrayOf(null, 1.0, 2.0, null, null, 5.0, null, null),
         arrayOf(1.0, null, null, 1.0, null, 2.0, null, null),
@@ -19,8 +42,8 @@ class GeneticModelTest {
         arrayOf(null, null, null, null, 0.5, null, null, null)
     )
 
-    private val geneticModel = GeneticModel.newBuilder<VerbosePath>()
-        .setBreedStrategy(GeneticModel.BreedStrategy.ALL)
+    private val geneticModelBuilder = GeneticModel.newBuilder<VerbosePath>()
+        .setBreedStrategy(BreedStrategy.ALL)
         .setBreeder(BreederImpl(distances))
         .setMutator(MutatorImpl(distances, 1, 3))
         .setMutationRate(0.5)
@@ -33,18 +56,58 @@ class GeneticModelTest {
             )
         )
         .setSelector(SelectorImpl())
-        .build()
+
+
+    private val geneticModel = geneticModelBuilder.build()
 
     @RepeatedTest(10)
-    fun test() {
-        val iterations = 10_000L
+    fun testBlockingResulting() {
         val ms = System.currentTimeMillis()
         geneticModel.start(iterations)
-        geneticModel.awaitResult(false).let {
-            println("${System.currentTimeMillis() - ms} ms for $iterations iterations")
-            val best = it.population[0]
-            println("${it.iterations} iterations: ${best.length} ${best.points.contentToString()}")
-            assert(best.length <= 18) { "${it.iterations} iterations: ${best.length} ${best.points.contentToString()}" }
-        }
+        val result = geneticModel.awaitResult(false)
+        printAndAssertResult(result, ms, 18.0)
+    }
+
+    @Test
+    fun testAsyncResulting() {
+        val ms = System.currentTimeMillis()
+        geneticModel.start(iterations)
+        geneticModel.requestResult(false) { printAndAssertResult(it, ms, 18.0) }
+        while (geneticModel.isStarted)
+            Thread.sleep(10)
+    }
+
+    @Test
+    fun testInterruption() {
+        val ms = System.currentTimeMillis()
+        geneticModel.start()
+        Thread.sleep(1000)
+        val result = geneticModel.awaitResult(true)
+        print("Interruption: "); printAndAssertResult(result, ms, Double.MAX_VALUE)
+    }
+
+    @ParameterizedTest
+    @EnumSource(BreedStrategy::class)
+    fun testBreedStrategies(strategy: BreedStrategy) {
+        val ms = System.currentTimeMillis()
+        val geneticModel = geneticModelBuilder.setBreedStrategy(strategy).build()
+        geneticModel.start(iterations)
+        val result = geneticModel.awaitResult(false)
+        print("${strategy.name}: "); printAndAssertResult(result, ms, 25.0)
+    }
+
+    @Test
+    fun testTwiceStart() {
+        geneticModel.start()
+        assertThrows<IllegalStateException> { geneticModel.start() }
+        geneticModel.awaitResult(true)
+    }
+
+    @Test
+    fun testIntermediateResult() {
+        assertThrows<IllegalStateException> { geneticModel.intermediateResult }
+        geneticModel.start()
+        geneticModel.intermediateResult
+        geneticModel.awaitResult(true)
     }
 }

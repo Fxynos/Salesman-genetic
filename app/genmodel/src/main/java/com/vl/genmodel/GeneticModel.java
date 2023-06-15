@@ -57,16 +57,12 @@ public class GeneticModel<T> implements Cloneable {
         start(Long.MAX_VALUE);
     }
 
-    public void requestResult(Callback<T> callback, boolean interrupt) {
-        if (!isStarted())
-            throw new IllegalStateException("Learning process is not started");
+    public void requestResult(boolean interrupt, Callback<T> callback) {
         trainer.requestResult(callback, interrupt);
     }
 
     @NotNull
     public Result<T> awaitResult(boolean interruptTraining) {
-        if (!isStarted())
-            throw new IllegalStateException("Learning process is not started");
         if (interruptTraining)
             trainer.interrupt();
         try {
